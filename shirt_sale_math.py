@@ -52,5 +52,5 @@ frame_a = calculate_dataframe(25.00)
 frame_b = calculate_dataframe(30.00)
 frame_c = calculate_dataframe(35.00)
 
-dataframe = pd.concat([frame_a, frame_b, frame_c])
+dataframe = pd.concat([frame_a, frame_b, frame_c], ignore_index=True)
 print(dataframe)
