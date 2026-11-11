@@ -11,11 +11,6 @@ unit_quantities: List[int] = [1, 5, 10, 20, 25, 50, 75, 100]
 def percentage(percent: int) -> float:
     return percent / 100
 
-def make_stars(rows: int) -> str:
-    star_symbol: str = '*'
-    print_rows = [star_symbol for x in range(rows)]
-    return ''.join(print_rows)
-
 def qualifies_for_bulk_discount(units: int) -> bool:
     return units >= 25
 
@@ -34,18 +29,33 @@ def calculate_profit_per_units(units: int, shirt_cost: float, shirt_sale_price: 
 
     return total_revenue - total_cost
 
+def find_minimum_profitable_sale_quantity(shirt_sale_price: float, total_cost: float) -> int:
+    quantity: int = 0
+    while (quantity * shirt_sale_price) < total_cost:
+        quantity += 1
+    return quantity
+
 def calculate_dataframe(shirt_sale_price: float):
     table: Dict[str, List[float]] = {}
-    cost_quantities: List[str] = [f'${calculate_cost_per_units(quantity, printful_shirt_cost):.2f}' for quantity in unit_quantities]
-    profit_quantities: List[str] = [f'${calculate_profit_per_units(quantity, printful_shirt_cost, shirt_sale_price):.2f}' for quantity in unit_quantities]
-    shirt_sale_price_quantities: List[str] = [f'${shirt_sale_price:.2f}' for x in range(len(unit_quantities))]
+    cost_quantities: List[float] = [calculate_cost_per_units(quantity, printful_shirt_cost) for quantity in unit_quantities]
+    revenue_quantities: List[float] = [shirt_sale_price * quantity for quantity in unit_quantities]
+    profit_quantities: List[float] = [calculate_profit_per_units(quantity, printful_shirt_cost, shirt_sale_price) for quantity in unit_quantities]
+    shirt_sale_price_quantities: List[float] = [shirt_sale_price for x in range(len(unit_quantities))]
+    quantity_to_profit: List[int] = [find_minimum_profitable_sale_quantity(shirt_sale_price, cost) for cost in cost_quantities]
 
     table['Quantity'] = unit_quantities
-    table['Total Cost'] = cost_quantities
     table['Sale Price'] = shirt_sale_price_quantities
+    table['Total Cost'] = cost_quantities
+    table['Total Revenue'] = revenue_quantities
     table['Total Profits'] = profit_quantities
+    table['Minimum Sales'] = quantity_to_profit
 
-    return pd.DataFrame(table)
+    def moneytize_me_cpn(vals: List[float]):
+        return [f'${x:.2f}' for x in vals]
+
+    money_table: Dict[str] = {k: moneytize_me_cpn(v) if isinstance(v[0], float) else v for k, v in table.items()}
+
+    return pd.DataFrame(money_table)
 
 
 frame_a = calculate_dataframe(25.00)
@@ -54,3 +64,7 @@ frame_c = calculate_dataframe(35.00)
 
 dataframe = pd.concat([frame_a, frame_b, frame_c], ignore_index=True)
 print(dataframe)
+
+x: float = 0.0
+print(type(x))
+print(isinstance(x, float))
