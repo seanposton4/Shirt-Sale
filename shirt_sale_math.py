@@ -64,7 +64,3 @@ frame_c = calculate_dataframe(35.00)
 
 dataframe = pd.concat([frame_a, frame_b, frame_c], ignore_index=True)
 print(dataframe)
-
-x: float = 0.0
-print(type(x))
-print(isinstance(x, float))
